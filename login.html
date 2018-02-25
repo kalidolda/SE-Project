@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Login/Register</title>
+	<meta charset="UTF-8">
+
+	<!-- JQuery -->
+	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+
+	<!-- Bootstrap -->
+	<link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css"
+      rel="stylesheet">
+
+	<!--  Custom style -->
+    <link href="login.css" rel="stylesheet">
+</head>
+
+<body>
+
+<div id="welcome_page_background">
+	<div id="login_div">
+		<h3> Login/Register</h3>
+		<form id="login" class="form-signin" >
+			<input id="loginEmail" class="form-control" placeholder="E-mail" style="margin-top:2px;">
+			<input id="loginPassword" class="form-control" type="password" placeholder="Password" style="margin-top:2px;">
+		</form>
+
+		<form id="register" class="form-signin" style="display: none;">
+			<input id="firstname" class="form-control" placeholder="First name" name="first_name" style="margin-top:2px;">
+			<p class="help-block">Please enter your first name</p>
+			<input id="lastname" class="form-control" placeholder="Last name" name="last_name" style="margin-top:2px;">
+			<p class="help-block">Please enter your last name</p>
+			<input id="registerEmail" class="form-control" placeholder="E-mail" name="email" style="margin-top:2px;">
+			<p class="help-block">Enter any valid e-mail</p>
+			<input id="registerPassword" class="form-control" type="password" name = "password" placeholder="Password" style="margin-top:2px;">
+			<p class="help-block">Password length should be more than 6 symbols</p>
+			<input id="registerPasswordConfirm" class="form-control" type="password" name = "password" placeholder="Password" style="margin-top:2px;">
+			<p class="help-block">Passwords should match</p>
+		</form>
+		<button id = "submitButton" class="btn btn-lg btn-primary btn-block" type="button" style="margin-top: 5px">Login</button>
+		<div id = "switcher_div">
+			<a href="#" id="switcher"> Register </a>
+		</div>
+	</div>
+</div>
+
+</body>
+
+</html>
+
+<script>
+	const form_modes = ["Register", "Login"];
+	const form_display_mode = ["none", "block"];
+	const LOGIN = 0;
+	const REGISTER = 1;
+	
+	var current_mode = LOGIN;
+
+	$("#switcher").click(function() {
+		$("#login").css("display", form_display_mode[current_mode]);
+		$("#register").css("display", form_display_mode[current_mode ^ 1]);
+		$("#submitButton").text(form_modes[current_mode]);
+		$("#switcher").text(form_modes[current_mode ^ 1]);
+ 		current_mode ^= 1;
+	}) 
+
+	$("#submitButton").click(function() {
+		var url;
+		var params = {};
+		if (current_mode == LOGIN) {
+			params("email", $("#loginEmail").val());
+			params("password", $("#loginPassword").val());
+			url = "login_url";
+		} else {
+			params("firstname", $("#firstname").val());
+			params("lastname", $("#lastname").val());
+			params("email", $("#registerEmail").val());
+			params("password", $("#registerPassword").val());
+			url = "register_url";
+		}
+		$.ajax ({
+		        type: "POST",
+		        url: url,
+		        contentType: 'application/json',
+		        async: false,
+		        data: JSON.stringify(params),
+		        success: function (response) {
+					//...
+		        }
+		    })
+	})
+</script>
