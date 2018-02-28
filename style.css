@@ -16,3 +16,8 @@
 	margin: 2px;
 	box-shadow: inset 1px 1px 1px 1px #F6D946;
 }
+
+.editBlock {
+	border: 1px solid black;
+	background: #57bf67;
+}
