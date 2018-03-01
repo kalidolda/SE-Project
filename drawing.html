@@ -11,7 +11,12 @@
 </head>
 
     <body>
-        <div id ="maincode">
+        <div id="maincode">
+        </div>
+
+        <div id="test">
+            <p>Testing 1</p>
+            <p>Testing 2</p>
         </div>
     </body>
 </html>
@@ -24,6 +29,9 @@
     const TAG_PRE = "<pre>";
 
     var startLine, endLine;
+    var arrayPre = [];
+    var editWindowOpened = false;
+    var $editBlockRef;
 
     REUSE = {
         createCodeLine: function(content, lineNumber) {
@@ -32,14 +40,15 @@
 
             $li.mouseup(function() {
                 endLine = $(this).data("lineNumber");
+                if(startLine > endLine)
+                    endLine = [startLine, startLine = endLine][0];
                 console.log("Selection is started from line " + startLine + " to line " + endLine);
-                createWindow();
+                createEditBlock(startLine, endLine);
             });
 
             $li.mousedown(function() {
                 startLine = $(this).data("lineNumber");
             });
-
             return $li;
         },
         createCommentLine: function(data, line) {
@@ -62,8 +71,10 @@
 
             $div.mouseup(function() {
                 endLine = $(this).data("lineNumber");
+                if(startLine > endLine)
+                    endLine = [startLine, startLine = endLine][0];
                 console.log("Selection is started from line " + startLine + " to line " + endLine);
-                createWindow();
+                createEditBlock(startLine, endLine);
             });
 
             $div.mousedown(function() {
@@ -92,11 +103,12 @@
     loadAndSortComments(data['comments']);
 
     function loadLines (data, parent) {
-        var $ol = $(TAG_OL).appendTo(parent);
+        var $ol = $(TAG_OL, {id:"olMainCode"}).appendTo(parent);
         var line = 1;
         var current = 0;
         $.each( data, function( key, val ) {
             var $pre = $(TAG_PRE).addClass("prettyprint").appendTo($ol);
+            arrayPre.push($pre);
             $pre.append(REUSE.createCodeLine(val, line));
             while(current < comments.length && comments[current]["end"] == line) {
                 $ol.append(REUSE.createCommentLine(comments[current], line));
@@ -107,18 +119,28 @@
         PR.prettyPrint();
     };
 
-    function createWindow() { 
-        var myWindow = window.open("", "MsgWindow", "width=200,height=100");
-        // var button =   $('<button/>',
-        // {
-        //     text: 'Test',
-        //     click: function () { alert('hi'); }
-        // });
+    function createEditBlock(startLine, endLine) { 
+        if(editWindowOpened)
+            return
+        var li = "<li>Hello</li>";
+        var childs = $("#test").children();
 
-
-        myWindow.document.write("<p>This is 'MsgWindow'. I am 200px wide and 100px tall!</p>");
-        myWindow.document.body.appendChild(button);
-        console.log(myWindow);
+        var $editBlock = $("<div>").html("<p> Add a comment </p>");
+        $editBlock.addClass("editBlock");
+        var $input = $("<input>").appendTo($editBlock);
+        
+        var $okButton = $("<button>").text("OK").appendTo($editBlock).click(function() {
+            $editBlockRef.remove();
+            editWindowOpened = false;
+        });
+        var $cancelButton = $("<button>").text("Cancel").appendTo($editBlock).click(function() {
+            $editBlockRef.remove();
+            editWindowOpened = false;
+        });
+        
+        arrayPre[endLine-1].after($editBlock);        
+        editWindowOpened = true;
+        $editBlockRef = $editBlock;
     }
 
     loadLines(data["lines"], "#maincode");
